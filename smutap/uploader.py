@@ -6,9 +6,12 @@ Created on Sun Mar 24 17:11:22 2019
 @author: nick
 """
 
-import mimetypes
+import config
+
+import mimetypes, os, subprocess
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import pyqtSlot
+from PyQt5.Qt import Qt
 
 """Upload a file to the media player given the file path"""
 # Useful links:
@@ -45,7 +48,7 @@ class Uploader(QWidget):
       
       # Path within target is the sourced path with the mediaSource
       # or home directory (as appropraite) stripped off
-      targetPath = Uploader.stripPrefix(item, mediaSource)
+      targetPath = Uploader.stripPrefix(item, config.mediaSource)
       targetPath = Uploader.stripPrefix(targetPath, os.getenv('HOME')+'/')
       
       # Not allowed \ in DOS names, so get rid of them now.
@@ -53,7 +56,7 @@ class Uploader(QWidget):
       targetPath = targetPath.replace('\\', '')
       
       # Change or add an extension
-      targetPath = os.path.splitext(mediaTarget + targetPath)[0]+'.mp3'
+      targetPath = os.path.splitext(config.mediaTarget + targetPath)[0]+'.mp3'
       
        # Remove characters not allowed in DOS filesystems
       targetPath = targetPath.translate({ord(c): None for c in ':*"<>|'})
@@ -64,8 +67,9 @@ class Uploader(QWidget):
       
      
       print("Need to create "+targetDir)
-      print ("source is {}. target is {}".format(mediaSource,targetPath))
-      command = rules[mimetype].format(
+      print ("source is {}. target is {}".format(config.mediaSource,
+                                                 targetPath))
+      command = config.rules[mimetype].format(
               source = Uploader.escSQuote(item),
               target = targetPath
       )

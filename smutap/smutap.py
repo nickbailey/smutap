@@ -1,29 +1,14 @@
 #!/usr/bin/python3
 
-import os
-
-"""End-user configuration"""
-# Where the music is (needs trailing '/')
-mediaSource = '/auto/hamlet/media/Audio/'
-# Where the music goes (use USERNAME in Windoze)
-mediaTarget = '/media/' + os.getenv('USER') + '/WALKMAN/MUSIC/'
-# Rules to convert media types. Inoput from source, output to target
-rules = {
-        'audio/flac': 'ffmpeg -i {source} -codec:a libmp3lame -qscale:a 2 -map_metadata 0 {target}',
-        'audio/mp3':  'cat {source} > {target}'
-        }
+import config
 
 import sys
-import mimetypes
-import subprocess
-from PyQt5.Qt import Qt
-from PyQt5.QtCore import pyqtSlot, QUrl, QSignalMapper
-from PyQt5.QtGui import QKeySequence, QDesktopServices
+
+from PyQt5.QtCore import QUrl, QSignalMapper
+from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QApplication, QWidget, \
   QHBoxLayout, QVBoxLayout, \
-  QListWidget, QAbstractItemView, QShortcut, \
-  QPushButton, \
-  QLabel, QFrame
+  QPushButton, QLabel
 
 from uploader import Uploader
 from widgets import MyListWidget, Separator
@@ -49,10 +34,10 @@ class MyWindow(QWidget):
     self.browserMapper = QSignalMapper()
     self.openSourceButton = QPushButton('&Open Music Archive')
     self.openSourceButton.released.connect(self.browserMapper.map)
-    self.browserMapper.setMapping(self.openSourceButton, mediaSource)
+    self.browserMapper.setMapping(self.openSourceButton, config.mediaSource)
     self.openTargetButton = QPushButton('Open &Player')
     self.openTargetButton.released.connect(self.browserMapper.map)
-    self.browserMapper.setMapping(self.openTargetButton, mediaTarget)
+    self.browserMapper.setMapping(self.openTargetButton, config.mediaTarget)
     self.browserMapper.mapped[str].connect(
             lambda b: QDesktopServices.openUrl(QUrl(b))
     )
